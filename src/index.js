@@ -1,6 +1,5 @@
 'use strict';
 
-// У нас будет использоваться hash-routing
 class App {
   routes = [{ path: '', view: null }];
 
@@ -9,7 +8,9 @@ class App {
     this.route();
   }
 
-  route() {}
+  route() {
+    const view = this.routes.find((route) => route.path === location.hash).view;
+  }
 }
 
 new App();
