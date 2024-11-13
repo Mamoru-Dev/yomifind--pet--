@@ -23,6 +23,11 @@ export class MainView extends AbstractView {
     this.state = onChange(this.state, this.stateHook.bind(this));
   }
 
+  destroy() {
+    onChange.unsubscribe(this.appState);
+    onChange.unsubscribe(this.state);
+  }
+
   appStateHook(path) {
     if (path === 'favorites') {
       this.render();
@@ -49,7 +54,7 @@ export class MainView extends AbstractView {
 
   async loadList(q, startIndex) {
     const res = await fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=${q}&startIndex=${startIndex}`
+      `https://www.googleapis.com/books/v1/volumes?q=${q}&startIndex=${startIndex}&maxResults=9`
     );
     return res.json();
   }
@@ -57,6 +62,10 @@ export class MainView extends AbstractView {
   render() {
     const main = document.createElement('div');
     main.append(new Search(this.state).render());
+    main.insertAdjacentHTML(
+      'beforeend',
+      `<header class="card-list__header">Books found - ${this.state.totalItems}</header>`
+    );
     main.append(new CardList(this.appState, this.state).render());
 
     this.app.innerHTML = '';

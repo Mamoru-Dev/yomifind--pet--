@@ -2,4 +2,11 @@
   font-size: 24px;
   line-height: 32px;
   font-weight: 600;
+  margin-bottom: 45px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
 }

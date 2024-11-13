@@ -12,7 +12,7 @@ export class Card extends DivComponent {
     if (this.appState.favorites.find((b) => b.id === this.card.id)) {
       this.appState.favorites = this.appState.favorites.filter((b) => b.id !== this.card.id);
     } else {
-      this.appState.favorites.push({ id: this.card.id });
+      this.appState.favorites.push(this.card);
     }
   }
 

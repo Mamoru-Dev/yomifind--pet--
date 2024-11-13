@@ -19,6 +19,164 @@
     }
   }
 
+  class DivComponent {
+    constructor() {
+      this.el = document.createElement('div');
+    }
+
+    // Возвращает сконструированный элемент
+    render() {
+      return this.el;
+    }
+  }
+
+  class Header extends DivComponent {
+    constructor(appState) {
+      super();
+      this.appState = appState;
+    }
+
+    render() {
+      this.el.classList.add('header');
+      this.el.innerHTML = `
+      <div>
+        <img src="/static/icon/logo.svg" alt="logo" class="header__logo" />
+      </div>
+      <div class="menu">
+        <a class="menu__item" href="#">
+          <img src="/static/icon/search.svg" alt="search" />
+          Search books
+        </a>
+        <a class="menu__item" href="#favorites">
+          <img src="/static/icon/favorite.svg" alt="favorites" />
+          Favorites
+        </a>
+        <div class="menu__counter">
+          ${this.appState.favorites.length}
+        </div>
+      </div>
+    `;
+
+      return this.el;
+    }
+  }
+
+  class Card extends DivComponent {
+    constructor(appState, card) {
+      super();
+      this.appState = appState;
+      this.card = card;
+    }
+
+    toggleFavorite() {
+      if (this.appState.favorites.find((b) => b.id === this.card.id)) {
+        this.appState.favorites = this.appState.favorites.filter((b) => b.id !== this.card.id);
+      } else {
+        this.appState.favorites.push(this.card);
+      }
+    }
+
+    render() {
+      this.el.classList.add('card');
+
+      const existInFavorites = this.appState.favorites.find((b) => b.id === this.card.id);
+
+      this.el.innerHTML = `
+      <div class="card__image">
+        <img src=${this.card.volumeInfo.imageLinks?.thumbnail} alt="Book Image" />
+      </div>
+      <div class="card__info">
+        <div class="card__tag">
+          ${this.card.volumeInfo.categories ? this.card.volumeInfo.categories[0] : 'Not Found'}
+        </div>
+        <div class="card__name">
+          ${this.card.volumeInfo.title}
+        </div>
+        <div class="card__author">
+          ${this.card.volumeInfo.authors ? this.card.volumeInfo.authors[0] : 'Not Found'}
+        </div>
+        <div class="card__footer">
+          <button class="button__add ${existInFavorites ? 'button__active' : ''}" >
+            ${
+              existInFavorites
+                ? '<img src="/static/icon/favorite.svg" alt="Remove from favorites"  />'
+                : '<img src="/static/icon/favorite-white.svg" alr="Add to favorites" />'
+            }
+          </button>
+        </div>
+      </div>
+    `;
+
+      this.el.querySelector('.button__add').addEventListener('click', this.toggleFavorite.bind(this));
+
+      return this.el;
+    }
+  }
+
+  class Loading extends DivComponent {
+    constructor() {
+      super();
+    }
+
+    render() {
+      this.el.classList.add('loading');
+      this.el.innerHTML = `
+      <img src="/static/icon/loading.svg" alt="loading" class="loading" />
+    `;
+
+      return this.el;
+    }
+  }
+
+  class CardList extends DivComponent {
+    constructor(appState, state) {
+      super();
+      this.appState = appState;
+      this.state = state;
+    }
+
+    render() {
+      if (this.state.loading) {
+        this.el.append(new Loading().render());
+        return this.el;
+      }
+
+      const cardGrid = document.createElement('div');
+      cardGrid.classList.add('card-grid');
+
+      for (const card of this.state.list) {
+        cardGrid.append(new Card(this.appState, card).render());
+      }
+
+      this.el.append(cardGrid);
+
+      return this.el;
+    }
+  }
+
+  class FavoritesView extends AbstractView {
+    constructor(appState) {
+      super();
+      this.setTitle('Favorite books');
+      this.appState = appState;
+    }
+
+    render() {
+      const main = document.createElement('div');
+      main.innerHTML = `<header class="card-list__header">Favorite books</header>`;
+      main.append(new CardList(this.appState, { list: this.appState.favorites }).render());
+
+      this.app.innerHTML = '';
+      this.app.append(main);
+      this.renderHeader();
+    }
+
+    renderHeader() {
+      const header = new Header(this.appState).render();
+      this.app.prepend(header);
+    }
+  }
+
   const PATH_SEPARATOR = '.';
   const TARGET = Symbol('target');
   const UNSUBSCRIBE = Symbol('unsubscribe');
@@ -1106,48 +1264,6 @@
   onChange.target = proxy => proxy?.[TARGET] ?? proxy;
   onChange.unsubscribe = proxy => proxy?.[UNSUBSCRIBE] ?? proxy;
 
-  class DivComponent {
-    constructor() {
-      this.el = document.createElement('div');
-    }
-
-    // Возвращает сконструированный элемент
-    render() {
-      return this.el;
-    }
-  }
-
-  class Header extends DivComponent {
-    constructor(appState) {
-      super();
-      this.appState = appState;
-    }
-
-    render() {
-      this.el.classList.add('header');
-      this.el.innerHTML = `
-      <div>
-        <img src="/static/icon/logo.svg" alt="logo" class="header__logo" />
-      </div>
-      <div class="menu">
-        <a class="menu__item" href="#">
-          <img src="/static/icon/search.svg" alt="search" />
-          Search books
-        </a>
-        <a class="menu__item" href="#favorites">
-          <img src="/static/icon/favorite.svg" alt="favorites" />
-          Favorites
-        </a>
-        <div class="menu__counter">
-          ${this.appState.favorites.length}
-        </div>
-      </div>
-    `;
-
-      return this.el;
-    }
-  }
-
   class Search extends DivComponent {
     constructor(state) {
       super();
@@ -1185,99 +1301,6 @@
     }
   }
 
-  class Card extends DivComponent {
-    constructor(appState, card) {
-      super();
-      this.appState = appState;
-      this.card = card;
-    }
-
-    toggleFavorite() {
-      if (this.appState.favorites.find((b) => b.id === this.card.id)) {
-        this.appState.favorites = this.appState.favorites.filter((b) => b.id !== this.card.id);
-      } else {
-        this.appState.favorites.push({ id: this.card.id });
-      }
-    }
-
-    render() {
-      this.el.classList.add('card');
-
-      const existInFavorites = this.appState.favorites.find((b) => b.id === this.card.id);
-
-      this.el.innerHTML = `
-      <div class="card__image">
-        <img src=${this.card.volumeInfo.imageLinks?.thumbnail} alt="Book Image" />
-      </div>
-      <div class="card__info">
-        <div class="card__tag">
-          ${this.card.volumeInfo.categories ? this.card.volumeInfo.categories[0] : 'Not Found'}
-        </div>
-        <div class="card__name">
-          ${this.card.volumeInfo.title}
-        </div>
-        <div class="card__author">
-          ${this.card.volumeInfo.authors ? this.card.volumeInfo.authors[0] : 'Not Found'}
-        </div>
-        <div class="card__footer">
-          <button class="button__add ${existInFavorites ? 'button__active' : ''}" >
-            ${
-              existInFavorites
-                ? '<img src="/static/icon/favorite.svg" alt="Remove from favorites"  />'
-                : '<img src="/static/icon/favorite-white.svg" alr="Add to favorites" />'
-            }
-          </button>
-        </div>
-      </div>
-    `;
-
-      this.el.querySelector('.button__add').addEventListener('click', this.toggleFavorite.bind(this));
-
-      return this.el;
-    }
-  }
-
-  class Loading extends DivComponent {
-    constructor() {
-      super();
-    }
-
-    render() {
-      this.el.classList.add('loading');
-      this.el.innerHTML = `
-      <img src="/static/icon/loading.svg" alt="loading" class="loading" />
-    `;
-
-      return this.el;
-    }
-  }
-
-  class CardList extends DivComponent {
-    constructor(appState, state) {
-      super();
-      this.appState = appState;
-      this.state = state;
-    }
-
-    render() {
-      if (this.state.loading) {
-        this.el.append(new Loading().render());
-        return this.el;
-      }
-
-      this.el.classList.add('card-list');
-      this.el.innerHTML = `
-      <header class="card-list__header">Books found - ${this.state.totalItems}</header>
-    `;
-
-      for (const card of this.state.list) {
-        this.el.append(new Card(this.appState, card).render());
-      }
-
-      return this.el;
-    }
-  }
-
   class MainView extends AbstractView {
     state = {
       list: [],
@@ -1295,6 +1318,11 @@
       // Подписываемся на слежку за изменением объекта appState (Library: on-change)
       this.appState = onChange(this.appState, this.appStateHook.bind(this));
       this.state = onChange(this.state, this.stateHook.bind(this));
+    }
+
+    destroy() {
+      onChange.unsubscribe(this.appState);
+      onChange.unsubscribe(this.state);
     }
 
     appStateHook(path) {
@@ -1323,7 +1351,7 @@
 
     async loadList(q, startIndex) {
       const res = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=${q}&startIndex=${startIndex}`
+        `https://www.googleapis.com/books/v1/volumes?q=${q}&startIndex=${startIndex}&maxResults=9`
       );
       return res.json();
     }
@@ -1331,6 +1359,10 @@
     render() {
       const main = document.createElement('div');
       main.append(new Search(this.state).render());
+      main.insertAdjacentHTML(
+        'beforeend',
+        `<header class="card-list__header">Books found - ${this.state.totalItems}</header>`
+      );
       main.append(new CardList(this.appState, this.state).render());
 
       this.app.innerHTML = '';
@@ -1345,7 +1377,10 @@
   }
 
   class App {
-    routes = [{ path: '', view: MainView }];
+    routes = [
+      { path: '', view: MainView },
+      { path: '#favorites', view: FavoritesView },
+    ];
     appState = {
       favorites: [],
     };
