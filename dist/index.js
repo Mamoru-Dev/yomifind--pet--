@@ -1185,6 +1185,38 @@
     }
   }
 
+  class CardList extends DivComponent {
+    constructor(appState, state) {
+      super();
+      this.appState = appState;
+      this.state = state;
+    }
+
+    render() {
+      this.el.classList.add('card-list');
+      this.el.innerHTML = `
+      <header class="card-list__header">Найдено книг - ${this.state.list.totalItems || 0}</header>
+    `;
+
+      return this.el;
+    }
+  }
+
+  class Loading extends DivComponent {
+    constructor() {
+      super();
+    }
+
+    render() {
+      this.el.classList.add('loading');
+      this.el.innerHTML = `
+      <img src="/static/icon/loading.svg" alt="loading" class="loading" />
+    `;
+
+      return this.el;
+    }
+  }
+
   class MainView extends AbstractView {
     state = {
       list: [],
@@ -1213,9 +1245,16 @@
       if (path === 'searchQuery') {
         this.state.loading = true;
         const data = await this.loadList(this.state.searchQuery, this.state.startIndex);
+        this.state.list = data;
         this.state.loading = false;
-        console.log(data);
-        // this.state.list = data;
+      }
+
+      if (path === 'loading') {
+        this.render();
+      }
+
+      if (path === 'list') {
+        this.render();
       }
     }
 
@@ -1229,7 +1268,14 @@
 
     render() {
       const main = document.createElement('div');
-      main.append(new Search(this.state).render());
+      const search = new Search(this.state).render();
+      const cardList = this.state.loading
+        ? new Loading().render()
+        : new CardList(this.appState, this.state).render();
+
+      main.append(search);
+      main.append(cardList);
+
       this.app.innerHTML = '';
       this.app.append(main);
       this.renderHeader();

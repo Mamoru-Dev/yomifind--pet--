@@ -2,6 +2,8 @@ import { AbstractView } from '../../common/view.js';
 import onChange from 'on-change';
 import { Header } from '../../components/header/header.js';
 import { Search } from '../../components/search/search.js';
+import { CardList } from '../../components/card-list/card-list.js';
+import { Loading } from '../../components/loading/loading.js';
 
 export class MainView extends AbstractView {
   state = {
@@ -31,9 +33,16 @@ export class MainView extends AbstractView {
     if (path === 'searchQuery') {
       this.state.loading = true;
       const data = await this.loadList(this.state.searchQuery, this.state.startIndex);
+      this.state.list = data;
       this.state.loading = false;
-      console.log(data);
-      // this.state.list = data;
+    }
+
+    if (path === 'loading') {
+      this.render();
+    }
+
+    if (path === 'list') {
+      this.render();
     }
   }
 
@@ -47,7 +56,14 @@ export class MainView extends AbstractView {
 
   render() {
     const main = document.createElement('div');
-    main.append(new Search(this.state).render());
+    const search = new Search(this.state).render();
+    const cardList = this.state.loading
+      ? new Loading().render()
+      : new CardList(this.appState, this.state).render();
+
+    main.append(search);
+    main.append(cardList);
+
     this.app.innerHTML = '';
     this.app.append(main);
     this.renderHeader();
