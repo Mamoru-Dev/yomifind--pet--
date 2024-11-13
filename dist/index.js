@@ -1124,25 +1124,51 @@
     }
 
     render() {
-      this.el.innerHTML = '';
       this.el.classList.add('header');
       this.el.innerHTML = `
       <div>
-        <img src="/static/logo.svg" alt="logo" class="header__logo" />
+        <img src="/static/icon/logo.svg" alt="logo" class="header__logo" />
       </div>
       <div class="menu">
         <a class="menu__item" href="#">
-          <img src="/static/search.svg" alt="search" />
+          <img src="/static/icon/search.svg" alt="search" />
           Search books
         </a>
         <a class="menu__item" href="#favorites">
-          <img src="/static/favorites.svg" alt="favorites" />
+          <img src="/static/icon/favorites.svg" alt="favorites" />
           Favorites
         </a>
         <div class="menu__counter">
           ${this.appState.favorites.length}
         </div>
       </div>
+    `;
+
+      return this.el;
+    }
+  }
+
+  class Search extends DivComponent {
+    constructor(state) {
+      super();
+      this.state = state;
+    }
+
+    render() {
+      this.el.classList.add('search');
+      this.el.innerHTML = `
+      <div class="search__wrapper">
+        <input
+          type="text"
+          placeholder="Search book or author...."
+          class="search__input"
+          value="${this.state.searchQuery ? this.state.searchQuery : ''}"
+        />
+        <img src="/static/icon/search.svg" alt="search" />
+      </div>
+      <button aria-label="Search" class="search__button">
+        <img src="/static/icon/search-white.svg" alt="search-btn" />
+      </button>
     `;
 
       return this.el;
@@ -1175,6 +1201,7 @@
 
     render() {
       const main = document.createElement('div');
+      main.append(new Search(this.state).render());
       this.app.innerHTML = '';
       this.app.append(main);
       this.renderHeader();
