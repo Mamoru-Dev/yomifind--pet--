@@ -1154,6 +1154,11 @@
       this.state = state;
     }
 
+    search() {
+      const value = this.el.querySelector('.search__input').value;
+      this.state.searchQuery = value;
+    }
+
     render() {
       this.el.classList.add('search');
       this.el.innerHTML = `
@@ -1171,6 +1176,11 @@
       </button>
     `;
 
+      this.el.querySelector('.search__button').addEventListener('click', this.search.bind(this));
+      this.el.querySelector('.search__input').addEventListener('keydown', (event) => {
+        if (event.code === 'Enter') this.search();
+      });
+
       return this.el;
     }
   }
@@ -1180,7 +1190,7 @@
       list: [],
       loading: false,
       searchQuery: undefined,
-      offset: 0,
+      startIndex: 0,
     };
 
     constructor(appState) {
@@ -1190,13 +1200,31 @@
 
       // Подписываемся на слежку за изменением объекта appState (Library: on-change)
       this.appState = onChange(this.appState, this.appStateHook.bind(this));
+      this.state = onChange(this.state, this.stateHook.bind(this));
     }
 
     appStateHook(path) {
-      // Перерендер при изменении favorites у объекта appState
       if (path === 'favorites') {
         this.render();
       }
+    }
+
+    async stateHook(path) {
+      if (path === 'searchQuery') {
+        this.state.loading = true;
+        const data = await this.loadList(this.state.searchQuery, this.state.startIndex);
+        this.state.loading = false;
+        console.log(data);
+        // this.state.list = data;
+      }
+    }
+
+    async loadList(q, startIndex) {
+      console.log('im here');
+      const res = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=${q}&startIndex=${startIndex}`
+      );
+      return res.json();
     }
 
     render() {
