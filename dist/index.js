@@ -1135,7 +1135,7 @@
           Search books
         </a>
         <a class="menu__item" href="#favorites">
-          <img src="/static/icon/favorites.svg" alt="favorites" />
+          <img src="/static/icon/favorite.svg" alt="favorites" />
           Favorites
         </a>
         <div class="menu__counter">
@@ -1185,18 +1185,53 @@
     }
   }
 
-  class CardList extends DivComponent {
-    constructor(appState, state) {
+  class Card extends DivComponent {
+    constructor(appState, card) {
       super();
       this.appState = appState;
-      this.state = state;
+      this.card = card;
+    }
+
+    toggleFavorite() {
+      if (this.appState.favorites.find((b) => b.id === this.card.id)) {
+        this.appState.favorites = this.appState.favorites.filter((b) => b.id !== this.card.id);
+      } else {
+        this.appState.favorites.push({ id: this.card.id });
+      }
     }
 
     render() {
-      this.el.classList.add('card-list');
+      this.el.classList.add('card');
+
+      const existInFavorites = this.appState.favorites.find((b) => b.id === this.card.id);
+
       this.el.innerHTML = `
-      <header class="card-list__header">Найдено книг - ${this.state.list.totalItems || 0}</header>
+      <div class="card__image">
+        <img src=${this.card.volumeInfo.imageLinks?.thumbnail} alt="Book Image" />
+      </div>
+      <div class="card__info">
+        <div class="card__tag">
+          ${this.card.volumeInfo.categories ? this.card.volumeInfo.categories[0] : 'Not Found'}
+        </div>
+        <div class="card__name">
+          ${this.card.volumeInfo.title}
+        </div>
+        <div class="card__author">
+          ${this.card.volumeInfo.authors ? this.card.volumeInfo.authors[0] : 'Not Found'}
+        </div>
+        <div class="card__footer">
+          <button class="button__add ${existInFavorites ? 'button__active' : ''}" >
+            ${
+              existInFavorites
+                ? '<img src="/static/icon/favorite.svg" alt="Remove from favorites"  />'
+                : '<img src="/static/icon/favorite-white.svg" alr="Add to favorites" />'
+            }
+          </button>
+        </div>
+      </div>
     `;
+
+      this.el.querySelector('.button__add').addEventListener('click', this.toggleFavorite.bind(this));
 
       return this.el;
     }
@@ -1217,9 +1252,36 @@
     }
   }
 
+  class CardList extends DivComponent {
+    constructor(appState, state) {
+      super();
+      this.appState = appState;
+      this.state = state;
+    }
+
+    render() {
+      if (this.state.loading) {
+        this.el.append(new Loading().render());
+        return this.el;
+      }
+
+      this.el.classList.add('card-list');
+      this.el.innerHTML = `
+      <header class="card-list__header">Books found - ${this.state.totalItems}</header>
+    `;
+
+      for (const card of this.state.list) {
+        this.el.append(new Card(this.appState, card).render());
+      }
+
+      return this.el;
+    }
+  }
+
   class MainView extends AbstractView {
     state = {
       list: [],
+      totalItems: 0,
       loading: false,
       searchQuery: undefined,
       startIndex: 0,
@@ -1245,7 +1307,8 @@
       if (path === 'searchQuery') {
         this.state.loading = true;
         const data = await this.loadList(this.state.searchQuery, this.state.startIndex);
-        this.state.list = data;
+        this.state.list = [...data.items];
+        this.state.totalItems = data.totalItems;
         this.state.loading = false;
       }
 
@@ -1259,7 +1322,6 @@
     }
 
     async loadList(q, startIndex) {
-      console.log('im here');
       const res = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=${q}&startIndex=${startIndex}`
       );
@@ -1268,13 +1330,8 @@
 
     render() {
       const main = document.createElement('div');
-      const search = new Search(this.state).render();
-      const cardList = this.state.loading
-        ? new Loading().render()
-        : new CardList(this.appState, this.state).render();
-
-      main.append(search);
-      main.append(cardList);
+      main.append(new Search(this.state).render());
+      main.append(new CardList(this.appState, this.state).render());
 
       this.app.innerHTML = '';
       this.app.append(main);

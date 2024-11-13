@@ -3,11 +3,11 @@ import onChange from 'on-change';
 import { Header } from '../../components/header/header.js';
 import { Search } from '../../components/search/search.js';
 import { CardList } from '../../components/card-list/card-list.js';
-import { Loading } from '../../components/loading/loading.js';
 
 export class MainView extends AbstractView {
   state = {
     list: [],
+    totalItems: 0,
     loading: false,
     searchQuery: undefined,
     startIndex: 0,
@@ -33,7 +33,8 @@ export class MainView extends AbstractView {
     if (path === 'searchQuery') {
       this.state.loading = true;
       const data = await this.loadList(this.state.searchQuery, this.state.startIndex);
-      this.state.list = data;
+      this.state.list = [...data.items];
+      this.state.totalItems = data.totalItems;
       this.state.loading = false;
     }
 
@@ -47,7 +48,6 @@ export class MainView extends AbstractView {
   }
 
   async loadList(q, startIndex) {
-    console.log('im here');
     const res = await fetch(
       `https://www.googleapis.com/books/v1/volumes?q=${q}&startIndex=${startIndex}`
     );
@@ -56,13 +56,8 @@ export class MainView extends AbstractView {
 
   render() {
     const main = document.createElement('div');
-    const search = new Search(this.state).render();
-    const cardList = this.state.loading
-      ? new Loading().render()
-      : new CardList(this.appState, this.state).render();
-
-    main.append(search);
-    main.append(cardList);
+    main.append(new Search(this.state).render());
+    main.append(new CardList(this.appState, this.state).render());
 
     this.app.innerHTML = '';
     this.app.append(main);
