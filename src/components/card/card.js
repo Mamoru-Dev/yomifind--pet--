@@ -39,8 +39,8 @@ export class Card extends DivComponent {
           <button class="button__add ${existInFavorites ? 'button__active' : ''}" >
             ${
               existInFavorites
-                ? '<img src="/static/icon/favorite.svg" alt="Remove from favorites"  />'
-                : '<img src="/static/icon/favorite-white.svg" alr="Add to favorites" />'
+                ? '<img src="./static/icon/favorite.svg" alt="Remove from favorites"  />'
+                : '<img src="./static/icon/favorite-white.svg" alr="Add to favorites" />'
             }
           </button>
         </div>

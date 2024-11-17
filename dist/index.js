@@ -40,7 +40,7 @@
       this.el.classList.add('header');
       this.el.innerHTML = `
       <div>
-        <img src="../static/icon/logo.svg" alt="logo" class="header__logo" />
+        <img src="./static/icon/logo.svg" alt="logo" class="header__logo" />
       </div>
       <div class="menu">
         <a class="menu__item" href="#">
@@ -48,7 +48,7 @@
           Search books
         </a>
         <a class="menu__item" href="#favorites">
-          <img src="../static/icon/favorite.svg" alt="favorites" />
+          <img src="./static/icon/favorite.svg" alt="favorites" />
           Favorites
         </a>
         <div class="menu__counter">
@@ -99,8 +99,8 @@
           <button class="button__add ${existInFavorites ? 'button__active' : ''}" >
             ${
               existInFavorites
-                ? '<img src="/static/icon/favorite.svg" alt="Remove from favorites"  />'
-                : '<img src="/static/icon/favorite-white.svg" alr="Add to favorites" />'
+                ? '<img src="./static/icon/favorite.svg" alt="Remove from favorites"  />'
+                : '<img src="./static/icon/favorite-white.svg" alr="Add to favorites" />'
             }
           </button>
         </div>
@@ -121,7 +121,7 @@
     render() {
       this.el.classList.add('loading');
       this.el.innerHTML = `
-      <img src="/static/icon/loading.svg" alt="loading" class="loading" />
+      <img src="./static/icon/loading.svg" alt="loading" class="loading" />
     `;
 
       return this.el;
@@ -1285,10 +1285,10 @@
           class="search__input"
           value="${this.state.searchQuery ? this.state.searchQuery : ''}"
         />
-        <img src="/static/icon/search.svg" alt="search" />
+        <img src="./static/icon/search.svg" alt="search" />
       </div>
       <button aria-label="Search" class="search__button">
-        <img src="/static/icon/search-white.svg" alt="search-btn" />
+        <img src="./static/icon/search-white.svg" alt="search-btn" />
       </button>
     `;
 
