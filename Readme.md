@@ -27,7 +27,9 @@ The app allows users to search for books by title, view details about matching b
    Save your favorite books to a bookmark list for easy access.  
    ![Bookmarks](/md_icons/bookmarks.png)
 
-3. **Dynamic UI Updates**  
+   ![Bookmarks](/md_icons/bookmarks2.png)
+
+4. **Dynamic UI Updates**  
    The app automatically re-renders components when data changes, ensuring a smooth and interactive user experience.
 
 ---
