@@ -1,17 +1,60 @@
-Цель:
+# Yomifind - SPA for Book Search
 
-1. SPA
-2. Компонентная структура приложения (Компоненты на классах)
-3. Сделать свой Mini-framework
-4. Реактивность (Ререндер при изменении данных)
+**BookFinder** is a single-page application (SPA) designed to search for books using the Google Books API. This project demonstrates the power of vanilla JavaScript by implementing a custom mini-framework with features like component-based architecture and reactivity.
 
-Сборщик: Rollup
-Реактивность: on-change (Следит за изменением объекта. Использует ProxyAPI)
+---
 
-Надо доделать:
+## 📝 About the Project
 
-1. Пагинацию
-2. Разработать страничку с подробной информацией о книге
-3. Сохранение избранных книг в localStorage
-4. Изменить дизайн
-5. Адаптивную верстку
+This pet project was created to practice key web development concepts, such as:  
+- **Building an SPA** from scratch.  
+- **Component-based architecture** with JavaScript classes.  
+- Developing a **custom mini-framework**.  
+- Implementing **reactivity** using `on-change` for automatic re-rendering on data changes.  
+- Using **Rollup** as a bundler.
+
+The app allows users to search for books by title, view details about matching books, and bookmark their favorites.
+
+---
+
+## ✨ Features
+
+1. **Book Search**  
+   Enter a book title in the search bar to fetch and display results based on title and author.  
+   ![Book Search](/md_icons/search.png)
+
+2. **Bookmarks**  
+   Save your favorite books to a bookmark list for easy access.  
+   ![Bookmarks](/md_icons/bookmarks.png)
+
+3. **Dynamic UI Updates**  
+   The app automatically re-renders components when data changes, ensuring a smooth and interactive user experience.
+
+---
+
+## 🛠️ Technologies Used
+
+- **JavaScript**  
+- **HTML**  
+- **CSS**  
+- **Rollup** – For bundling the JavaScript code.  
+- **Google Books API** – For fetching book data.  
+- **on-change** – To implement reactivity using the Proxy API.  
+
+---
+
+## 🚀 Getting Started
+
+https://cloudmamoru.github.io/yomifind--pet--/
+
+---
+
+## 📅 Need to Do
+
+1. Implement pagination to handle large result sets from Google Books API.  
+2. Develop a detailed book information page.  
+3. Add the ability to save favorite books in `localStorage`.  
+4. Update and improve the app's design.  
+5. Make the app responsive for better usability on mobile devices.
+
+
