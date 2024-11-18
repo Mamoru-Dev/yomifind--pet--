@@ -21,13 +21,11 @@ The app allows users to search for books by title, view details about matching b
 
 1. **Book Search**  
    Enter a book title in the search bar to fetch and display results based on title and author.  
-   ![Book Search](/md_icons/search.png)
+   ![Book Search](/mdIcons/search.png)
 
 2. **Bookmarks**  
    Save your favorite books to a bookmark list for easy access.  
-   ![Bookmarks](/md_icons/bookmarks.png)
-
-   ![Bookmarks](/md_icons/bookmarks2.png)
+   ![Bookmarks](/mdIcons/bookmarks2.png)
 
 4. **Dynamic UI Updates**  
    The app automatically re-renders components when data changes, ensuring a smooth and interactive user experience.
