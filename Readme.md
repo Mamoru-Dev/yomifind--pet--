@@ -45,7 +45,7 @@ The app allows users to search for books by title, view details about matching b
 
 ## 🚀 Getting Started
 
-https://cloudmamoru.github.io/yomifind--pet--/
+https://mamoru-dev.github.io/yomifind--pet--/
 
 ---
 
